@@ -1,0 +1,8 @@
+/* Radix UI Theme Reset */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--gray-1);
+    color: var(--gray-12);
+}
+
