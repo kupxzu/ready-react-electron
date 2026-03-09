@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HashRouter>
       <AuthProvider>
-        <Theme appearance="light" accentColor="indigo" grayColor="slate" radius="large" scaling="100%">
+        <Theme appearance="light" accentColor="iris" grayColor="slate" radius="medium" scaling="100%">
             <App />
         </Theme>
       </AuthProvider>

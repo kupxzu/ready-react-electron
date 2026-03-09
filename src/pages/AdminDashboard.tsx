@@ -1,97 +1,139 @@
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { Flex, Heading, Button, Card, Grid, Text, Separator, Box, Container } from '@radix-ui/themes';
+import { Flex, Heading, Button, Card, Grid, Text, Box, Badge } from '@radix-ui/themes';
+import DashboardLayout from '../components/DashboardLayout';
+import { Users, Activity, Server, UserPlus, FileBarChart, Settings, TrendingUp } from 'lucide-react';
 
 const AdminDashboard = () => {
-    const { user, logout } = useAuth();
+    const { user, isLoading } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!user || user.role !== 'admin') {
+        if (!isLoading && (!user || user.role !== 'admin')) {
             navigate('/');
         }
-    }, [user, navigate]);
+    }, [user, isLoading, navigate]);
+
+    if (isLoading) {
+        return (
+            <Flex justify="center" align="center" style={{ height: '100vh' }}>
+                <Box className="spinner" style={{ width: 24, height: 24, border: '2px solid var(--gray-4)', borderTopColor: 'var(--accent-9)', borderRadius: '50%' }} />
+            </Flex>
+        );
+    }
 
     return (
-        <Flex direction="column" minHeight="100vh">
-            <header style={{ padding: 'var(--space-3)', borderBottom: '1px solid var(--gray-5)' }}>
-                <Container size="4">
-                    <Flex justify="between" align="center">
-                        <Heading size="5">Admin Console</Heading>
-                        <Flex gap="3" align="center">
-                            <Text size="2" color="gray">Logged in as {user?.username}</Text>
-                            <Button variant="soft" color="gray" onClick={logout}>
-                                Logout
-                            </Button>
+        <DashboardLayout>
+            <Box>
+                <Flex direction={{ initial: 'column', sm: 'row' }} justify="between" align={{ initial: 'start', sm: 'center' }} gap="3" mb="6">
+                    <Box>
+                        <Heading size={{ initial: '6', sm: '7' }}>Dashboard</Heading>
+                        <Text size="2" color="gray">Welcome back, {user?.username}</Text>
+                    </Box>
+                    <Button style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/users')}>
+                        <UserPlus size={16} />
+                        Add User
+                    </Button>
+                </Flex>
+                
+                <Grid columns={{ initial: '1', sm: '2', lg: '3' }} gap="4" mb="6">
+                    <Card className="hover-card" style={{ backgroundColor: 'white' }}>
+                        <Flex justify="between" align="start">
+                            <Flex direction="column" gap="1">
+                                <Text size="2" color="gray">Total Users</Text>
+                                <Heading size="6">1,240</Heading>
+                                <Flex align="center" gap="1">
+                                    <TrendingUp size={12} color="var(--green-9)" />
+                                    <Text size="1" color="green">+12%</Text>
+                                </Flex>
+                            </Flex>
+                            <Box p="2" style={{ backgroundColor: 'var(--iris-a3)', borderRadius: '10px' }}>
+                                <Users size={20} color="var(--iris-9)" />
+                            </Box>
                         </Flex>
-                    </Flex>
-                </Container>
-            </header>
+                    </Card>
 
-            <Box p="5" style={{ flex: 1, backgroundColor: 'var(--gray-2)' }}>
-                <Container size="4">
-                    <Heading size="8" mb="5">Dashboard Overview</Heading>
-                    
-                    <Grid columns={{ initial: '1', md: '3' }} gap="4" width="auto">
-                        <Card size="2">
+                    <Card className="hover-card" style={{ backgroundColor: 'white' }}>
+                        <Flex justify="between" align="start">
                             <Flex direction="column" gap="1">
-                                <Text size="2" weight="bold" color="gray">Total Users</Text>
-                                <Heading size="7">1,240</Heading>
-                                <Text size="1" color="green">+12% from last month</Text>
+                                <Text size="2" color="gray">Active Sessions</Text>
+                                <Heading size="6">56</Heading>
+                                <Text size="1" color="gray">Live now</Text>
                             </Flex>
-                        </Card>
-                        <Card size="2">
+                            <Box p="2" style={{ backgroundColor: 'var(--green-a3)', borderRadius: '10px' }}>
+                                <Activity size={20} color="var(--green-9)" />
+                            </Box>
+                        </Flex>
+                    </Card>
+
+                    <Card className="hover-card" style={{ backgroundColor: 'white' }}>
+                        <Flex justify="between" align="start">
                             <Flex direction="column" gap="1">
-                                <Text size="2" weight="bold" color="gray">Active Sessions</Text>
-                                <Heading size="7">56</Heading>
-                                <Text size="1" color="gray">Currently online</Text>
+                                <Text size="2" color="gray">System Status</Text>
+                                <Heading size="6">Healthy</Heading>
+                                <Badge color="green" size="1">Operational</Badge>
                             </Flex>
-                        </Card>
-                        <Card size="2">
-                            <Flex direction="column" gap="1">
-                                <Text size="2" weight="bold" color="gray">System Status</Text>
-                                <Heading size="7" color="green">Healthy</Heading>
-                                <Text size="1" color="gray">All systems operational</Text>
-                            </Flex>
-                        </Card>
-                    </Grid>
+                            <Box p="2" style={{ backgroundColor: 'var(--green-a3)', borderRadius: '10px' }}>
+                                <Server size={20} color="var(--green-9)" />
+                            </Box>
+                        </Flex>
+                    </Card>
+                </Grid>
 
-                    <Separator my="5" size="4" />
+                <Grid columns={{ initial: '1', lg: '2' }} gap="4">
+                    <Card style={{ backgroundColor: 'white' }}>
+                        <Heading size="4" mb="4">Recent Activity</Heading>
+                        <Flex direction="column" gap="3">
+                            {[
+                                { text: 'New user registration', time: '2m ago', color: 'green' },
+                                { text: 'System update completed', time: '1h ago', color: 'blue' },
+                                { text: 'Backup successful', time: '4h ago', color: 'gray' },
+                                { text: 'Security scan completed', time: '6h ago', color: 'gray' },
+                            ].map((item, i) => (
+                                <Flex key={i} justify="between" align="center" py="2" style={{ borderBottom: i < 3 ? '1px solid var(--gray-4)' : 'none' }}>
+                                    <Flex align="center" gap="3">
+                                        <Box style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: `var(--${item.color}-9)` }} />
+                                        <Text size="2">{item.text}</Text>
+                                    </Flex>
+                                    <Text size="1" color="gray">{item.time}</Text>
+                                </Flex>
+                            ))}
+                        </Flex>
+                    </Card>
 
-                    <Grid columns={{ initial: '1', md: '2' }} gap="5">
-                        <Card>
-                            <Heading size="4" mb="3">Recent Activity</Heading>
-                            <Flex direction="column" gap="3">
-                                <Flex justify="between">
-                                    <Text size="2">New user registration</Text>
-                                    <Text size="2" color="gray">2m ago</Text>
+                    <Card style={{ backgroundColor: 'white' }}>
+                        <Heading size="4" mb="4">Quick Actions</Heading>
+                        <Grid columns="2" gap="3">
+                            <Button variant="soft" style={{ cursor: 'pointer', height: '60px' }} onClick={() => navigate('/admin/users')}>
+                                <Flex direction="column" align="center" gap="1">
+                                    <UserPlus size={18} />
+                                    <Text size="1">Add User</Text>
                                 </Flex>
-                                <Separator size="4" />
-                                <Flex justify="between">
-                                    <Text size="2">System update completed</Text>
-                                    <Text size="2" color="gray">1h ago</Text>
+                            </Button>
+                            <Button variant="soft" color="gray" style={{ cursor: 'pointer', height: '60px' }} onClick={() => navigate('/admin/reports')}>
+                                <Flex direction="column" align="center" gap="1">
+                                    <FileBarChart size={18} />
+                                    <Text size="1">Reports</Text>
                                 </Flex>
-                                <Separator size="4" />
-                                <Flex justify="between">
-                                    <Text size="2">Backup successful</Text>
-                                    <Text size="2" color="gray">4h ago</Text>
+                            </Button>
+                            <Button variant="soft" color="gray" style={{ cursor: 'pointer', height: '60px' }} onClick={() => navigate('/admin/settings')}>
+                                <Flex direction="column" align="center" gap="1">
+                                    <Settings size={18} />
+                                    <Text size="1">Settings</Text>
                                 </Flex>
-                            </Flex>
-                        </Card>
-
-                        <Card>
-                            <Heading size="4" mb="3">Quick Actions</Heading>
-                            <Flex gap="3" wrap="wrap">
-                                <Button>Add User</Button>
-                                <Button variant="soft">View Reports</Button>
-                                <Button variant="outline">Settings</Button>
-                            </Flex>
-                        </Card>
-                    </Grid>
-                </Container>
+                            </Button>
+                            <Button variant="soft" color="gray" style={{ cursor: 'pointer', height: '60px' }}>
+                                <Flex direction="column" align="center" gap="1">
+                                    <Server size={18} />
+                                    <Text size="1">System</Text>
+                                </Flex>
+                            </Button>
+                        </Grid>
+                    </Card>
+                </Grid>
             </Box>
-        </Flex>
+        </DashboardLayout>
     );
 };
 
